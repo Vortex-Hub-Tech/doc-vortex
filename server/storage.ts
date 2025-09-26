@@ -1,12 +1,22 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { 
-  type User, type InsertUser,
-  type Category, type InsertCategory,
-  type Tool, type InsertTool,
-  type Project, type InsertProject, type ProjectWithRelations,
-  type ProjectImage, type InsertProjectImage,
-  users, categories, tools, projects, projectImages
+import {
+  type User,
+  type InsertUser,
+  type Category,
+  type InsertCategory,
+  type Tool,
+  type InsertTool,
+  type Project,
+  type InsertProject,
+  type ProjectWithRelations,
+  type ProjectImage,
+  type InsertProjectImage,
+  users,
+  categories,
+  tools,
+  projects,
+  projectImages,
 } from "@shared/schema";
 import { eq, sql } from "drizzle-orm";
 import { randomUUID } from "crypto";
@@ -21,7 +31,10 @@ export interface IStorage {
   getAllCategories(): Promise<Category[]>;
   getCategory(id: string): Promise<Category | undefined>;
   createCategory(category: InsertCategory): Promise<Category>;
-  updateCategory(id: string, category: Partial<InsertCategory>): Promise<Category | undefined>;
+  updateCategory(
+    id: string,
+    category: Partial<InsertCategory>,
+  ): Promise<Category | undefined>;
   deleteCategory(id: string): Promise<boolean>;
 
   // Tools
@@ -38,7 +51,10 @@ export interface IStorage {
   getProject(id: string): Promise<ProjectWithRelations | undefined>;
   getProjectBySlug(slug: string): Promise<ProjectWithRelations | undefined>;
   createProject(project: InsertProject): Promise<Project>;
-  updateProject(id: string, project: Partial<InsertProject>): Promise<Project | undefined>;
+  updateProject(
+    id: string,
+    project: Partial<InsertProject>,
+  ): Promise<Project | undefined>;
   deleteProject(id: string): Promise<boolean>;
 
   // Project Images
@@ -54,9 +70,9 @@ class DatabaseStorage implements IStorage {
     if (!process.env.DATABASE_URL) {
       throw new Error("DATABASE_URL environment variable is required");
     }
-    const sql = postgres(process.env.DATABASE_URL, { 
-      ssl: 'require',
-      max: 1 
+    const sql = postgres(process.env.DATABASE_URL, {
+      ssl: "require",
+      max: 1,
     });
     this.db = drizzle(sql);
   }
@@ -68,7 +84,10 @@ class DatabaseStorage implements IStorage {
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    const result = await this.db.select().from(users).where(eq(users.email, email));
+    const result = await this.db
+      .select()
+      .from(users)
+      .where(eq(users.email, email));
     return result[0];
   }
 
@@ -85,29 +104,40 @@ class DatabaseStorage implements IStorage {
   }
 
   async getCategory(id: string): Promise<Category | undefined> {
-    const result = await this.db.select().from(categories).where(eq(categories.id, id));
+    const result = await this.db
+      .select()
+      .from(categories)
+      .where(eq(categories.id, id));
     return result[0];
   }
 
   async createCategory(insertCategory: InsertCategory): Promise<Category> {
     const id = randomUUID();
-    const category: Category = { 
-      ...insertCategory, 
-      id, 
+    const category: Category = {
+      ...insertCategory,
+      id,
       createdAt: new Date(),
-      color: insertCategory.color || "#3B82F6"
+      color: insertCategory.color || "#3B82F6",
     };
     await this.db.insert(categories).values(category);
     return category;
   }
 
-  async updateCategory(id: string, updateData: Partial<InsertCategory>): Promise<Category | undefined> {
-    await this.db.update(categories).set(updateData).where(eq(categories.id, id));
+  async updateCategory(
+    id: string,
+    updateData: Partial<InsertCategory>,
+  ): Promise<Category | undefined> {
+    await this.db
+      .update(categories)
+      .set(updateData)
+      .where(eq(categories.id, id));
     return this.getCategory(id);
   }
 
   async deleteCategory(id: string): Promise<boolean> {
-    const result = await this.db.delete(categories).where(eq(categories.id, id));
+    const result = await this.db
+      .delete(categories)
+      .where(eq(categories.id, id));
     return result.length > 0;
   }
 
@@ -117,7 +147,10 @@ class DatabaseStorage implements IStorage {
   }
 
   async getToolsByCategory(categoryId: string): Promise<Tool[]> {
-    return await this.db.select().from(tools).where(eq(tools.categoryId, categoryId));
+    return await this.db
+      .select()
+      .from(tools)
+      .where(eq(tools.categoryId, categoryId));
   }
 
   async getTool(id: string): Promise<Tool | undefined> {
@@ -127,17 +160,20 @@ class DatabaseStorage implements IStorage {
 
   async createTool(insertTool: InsertTool): Promise<Tool> {
     const id = randomUUID();
-    const tool: Tool = { 
-      ...insertTool, 
-      id, 
+    const tool: Tool = {
+      ...insertTool,
+      id,
       createdAt: new Date(),
-      categoryId: insertTool.categoryId || null
+      categoryId: insertTool.categoryId || null,
     };
     await this.db.insert(tools).values(tool);
     return tool;
   }
 
-  async updateTool(id: string, updateData: Partial<InsertTool>): Promise<Tool | undefined> {
+  async updateTool(
+    id: string,
+    updateData: Partial<InsertTool>,
+  ): Promise<Tool | undefined> {
     await this.db.update(tools).set(updateData).where(eq(tools.id, id));
     return this.getTool(id);
   }
@@ -169,7 +205,7 @@ class DatabaseStorage implements IStorage {
           tool: row.tool || undefined,
           images,
         };
-      })
+      }),
     );
 
     return projectsWithImages;
@@ -197,7 +233,7 @@ class DatabaseStorage implements IStorage {
           tool: row.tool || undefined,
           images,
         };
-      })
+      }),
     );
 
     return projectsWithImages;
@@ -218,7 +254,7 @@ class DatabaseStorage implements IStorage {
     if (!result[0]) return undefined;
 
     const images = await this.getProjectImages(id);
-    
+
     return {
       ...result[0].project,
       category: result[0].category || undefined,
@@ -227,7 +263,9 @@ class DatabaseStorage implements IStorage {
     };
   }
 
-  async getProjectBySlug(slug: string): Promise<ProjectWithRelations | undefined> {
+  async getProjectBySlug(
+    slug: string,
+  ): Promise<ProjectWithRelations | undefined> {
     const result = await this.db
       .select({
         project: projects,
@@ -242,7 +280,7 @@ class DatabaseStorage implements IStorage {
     if (!result[0]) return undefined;
 
     const images = await this.getProjectImages(result[0].project.id);
-    
+
     return {
       ...result[0].project,
       category: result[0].category || undefined,
@@ -254,25 +292,31 @@ class DatabaseStorage implements IStorage {
   async createProject(insertProject: InsertProject): Promise<Project> {
     const id = randomUUID();
     const now = new Date();
-    const project: Project = { 
-      ...insertProject, 
-      id, 
-      createdAt: now, 
+    const project: Project = {
+      ...insertProject,
+      id,
+      createdAt: now,
       updatedAt: now,
       status: insertProject.status || "draft",
       categoryId: insertProject.categoryId || null,
       toolId: insertProject.toolId || null,
       thumbnailUrl: insertProject.thumbnailUrl || null,
-      links: insertProject.links || []
+      links: insertProject.links || [],
     };
     await this.db.insert(projects).values(project);
     return project;
   }
 
-  async updateProject(id: string, updateData: Partial<InsertProject>): Promise<Project | undefined> {
+  async updateProject(
+    id: string,
+    updateData: Partial<InsertProject>,
+  ): Promise<Project | undefined> {
     const updatedData = { ...updateData, updatedAt: new Date() };
     await this.db.update(projects).set(updatedData).where(eq(projects.id, id));
-    const result = await this.db.select().from(projects).where(eq(projects.id, id));
+    const result = await this.db
+      .select()
+      .from(projects)
+      .where(eq(projects.id, id));
     return result[0];
   }
 
@@ -290,22 +334,26 @@ class DatabaseStorage implements IStorage {
       .orderBy(projectImages.order);
   }
 
-  async createProjectImage(insertImage: InsertProjectImage): Promise<ProjectImage> {
+  async createProjectImage(
+    insertImage: InsertProjectImage,
+  ): Promise<ProjectImage> {
     const id = randomUUID();
-    const image: ProjectImage = { 
-      ...insertImage, 
-      id, 
+    const image: ProjectImage = {
+      ...insertImage,
+      id,
       createdAt: new Date(),
       alt: insertImage.alt || "",
       order: insertImage.order || "0",
-      projectId: insertImage.projectId || null
+      projectId: insertImage.projectId || null,
     };
     await this.db.insert(projectImages).values(image);
     return image;
   }
 
   async deleteProjectImage(id: string): Promise<boolean> {
-    const result = await this.db.delete(projectImages).where(eq(projectImages.id, id));
+    const result = await this.db
+      .delete(projectImages)
+      .where(eq(projectImages.id, id));
     return result.length > 0;
   }
 }
