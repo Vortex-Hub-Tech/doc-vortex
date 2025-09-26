@@ -70,6 +70,7 @@ export const insertProjectSchema = createInsertSchema(projects).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
+  slug: true,
 });
 
 export const insertProjectImageSchema = createInsertSchema(projectImages).omit({
