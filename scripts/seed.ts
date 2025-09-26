@@ -1,21 +1,35 @@
-import { storage } from "../server/storage";
+
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
 import bcrypt from "bcrypt";
+import { 
+  users, categories, tools, projects, projectImages
+} from "../shared/schema";
+import { eq } from "drizzle-orm";
 
 async function seed() {
   try {
     console.log("🌱 Iniciando seed do banco de dados...");
+
+    // Conectar ao banco Supabase
+    if (!process.env.DATABASE_URL) {
+      throw new Error("DATABASE_URL environment variable is required");
+    }
+
+    const sql = postgres(process.env.DATABASE_URL);
+    const db = drizzle(sql);
 
     // Criar usuário administrador
     const adminEmail = "admin@sistema.com";
     const adminPassword = "admin123";
     
     // Verificar se o usuário já existe
-    const existingUser = await storage.getUserByEmail(adminEmail);
-    if (existingUser) {
+    const existingUser = await db.select().from(users).where(eq(users.email, adminEmail));
+    if (existingUser.length > 0) {
       console.log("✅ Usuário administrador já existe");
     } else {
       const hashedPassword = await bcrypt.hash(adminPassword, 10);
-      await storage.createUser({
+      await db.insert(users).values({
         email: adminEmail,
         password: hashedPassword
       });
@@ -23,39 +37,39 @@ async function seed() {
     }
 
     // Criar categorias de exemplo
-    const categories = [
+    const categoryData = [
       { name: "IA", slug: "ia", color: "#3B82F6" },
       { name: "Automação", slug: "automacao", color: "#10B981" },
       { name: "Bot", slug: "bot", color: "#8B5CF6" },
       { name: "Integração", slug: "integracao", color: "#F59E0B" }
     ];
 
-    for (const category of categories) {
+    for (const category of categoryData) {
       try {
-        await storage.createCategory(category);
+        await db.insert(categories).values(category);
         console.log(`✅ Categoria criada: ${category.name}`);
-      } catch (error) {
+      } catch (error: any) {
         console.log(`⚠️  Categoria ${category.name} já existe ou erro:`, error.message);
       }
     }
 
     // Criar ferramentas de exemplo
-    const allCategories = await storage.getAllCategories();
+    const allCategories = await db.select().from(categories);
     const iaCategory = allCategories.find(cat => cat.slug === "ia");
     const automacaoCategory = allCategories.find(cat => cat.slug === "automacao");
 
-    const tools = [
+    const toolsData = [
       { name: "OpenAI", slug: "openai", categoryId: iaCategory?.id },
       { name: "n8n", slug: "n8n", categoryId: automacaoCategory?.id },
       { name: "Zapier", slug: "zapier", categoryId: automacaoCategory?.id },
       { name: "Claude", slug: "claude", categoryId: iaCategory?.id }
     ];
 
-    for (const tool of tools) {
+    for (const tool of toolsData) {
       try {
-        await storage.createTool(tool);
+        await db.insert(tools).values(tool);
         console.log(`✅ Ferramenta criada: ${tool.name}`);
-      } catch (error) {
+      } catch (error: any) {
         console.log(`⚠️  Ferramenta ${tool.name} já existe ou erro:`, error.message);
       }
     }
@@ -64,6 +78,9 @@ async function seed() {
     console.log("📝 Acesse o sistema com:");
     console.log("   Email: admin@sistema.com");
     console.log("   Senha: admin123");
+
+    // Fechar conexão
+    await sql.end();
 
   } catch (error) {
     console.error("❌ Erro no seed:", error);
