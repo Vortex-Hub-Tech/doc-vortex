@@ -54,7 +54,7 @@ export function ProjectEditor({ projectId, onBack, onSave }: ProjectEditorProps)
   });
 
   // Fetch existing project for edit mode
-  const { data: project, isLoading: projectLoading } = useQuery({
+  const { data: project, isLoading: projectLoading } = useQuery<ProjectWithRelations>({
     queryKey: ["/api/projects", projectId],
     enabled: !!projectId,
   });
@@ -216,7 +216,7 @@ export function ProjectEditor({ projectId, onBack, onSave }: ProjectEditorProps)
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Categoria</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
+                          <Select onValueChange={field.onChange} value={field.value || ""}>
                             <FormControl>
                               <SelectTrigger data-testid="select-category">
                                 <SelectValue placeholder="Selecione uma categoria" />
@@ -241,7 +241,7 @@ export function ProjectEditor({ projectId, onBack, onSave }: ProjectEditorProps)
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Ferramenta</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
+                          <Select onValueChange={field.onChange} value={field.value || ""}>
                             <FormControl>
                               <SelectTrigger data-testid="select-tool">
                                 <SelectValue placeholder="Selecione uma ferramenta" />
