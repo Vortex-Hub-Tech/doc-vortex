@@ -26,7 +26,8 @@ export function CategoriesManagement() {
     resolver: zodResolver(insertCategorySchema),
     defaultValues: {
       name: "",
-      description: "",
+      slug: "",
+      color: "",
     },
   });
 
@@ -92,7 +93,8 @@ export function CategoriesManagement() {
     setEditingCategory(category);
     form.reset({
       name: category.name,
-      description: category.description || "",
+      slug: category.slug,
+      color: category.color,
     });
     setIsDialogOpen(true);
   };
@@ -164,15 +166,15 @@ export function CategoriesManagement() {
                 />
                 <FormField
                   control={form.control}
-                  name="description"
+                  name="color"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Descrição (opcional)</FormLabel>
+                      <FormLabel>Cor (opcional)</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="Descrição da categoria..."
+                          placeholder="#3b82f6"
                           {...field}
-                          data-testid="input-category-description"
+                          data-testid="input-category-color"
                         />
                       </FormControl>
                       <FormMessage />
@@ -249,11 +251,9 @@ export function CategoriesManagement() {
                 <h3 className="font-medium text-foreground mb-2" data-testid={`text-category-name-${category.id}`}>
                   {category.name}
                 </h3>
-                {category.description && (
-                  <p className="text-sm text-muted-foreground" data-testid={`text-category-description-${category.id}`}>
-                    {category.description}
-                  </p>
-                )}
+                <p className="text-xs text-muted-foreground" data-testid={`text-category-slug-${category.id}`}>
+                  /{category.slug}
+                </p>
               </CardContent>
             </Card>
           ))}

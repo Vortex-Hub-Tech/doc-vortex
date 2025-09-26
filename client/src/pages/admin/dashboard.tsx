@@ -3,6 +3,9 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Sidebar } from "@/components/admin/sidebar";
 import { ProjectCard } from "@/components/admin/project-card";
+import { CategoriesManagement } from "@/components/admin/categories-management";
+import { ToolsManagement } from "@/components/admin/tools-management";
+import { Settings } from "@/components/admin/settings";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
@@ -77,58 +80,80 @@ export default function AdminDashboard() {
 
       {/* Main Content */}
       <div className="ml-64 flex-1">
-        {/* Header */}
-        <header className="bg-card border-b border-border shadow-sm">
-          <div className="px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-semibold text-foreground">
-                  Gerenciar Projetos
-                </h2>
-                <p className="text-sm text-muted-foreground">
-                  Organize e documente seus projetos
-                </p>
+        {activeSection === "projects" && (
+          <>
+            {/* Header */}
+            <header className="bg-card border-b border-border shadow-sm">
+              <div className="px-6 py-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-xl font-semibold text-foreground">
+                      Gerenciar Projetos
+                    </h2>
+                    <p className="text-sm text-muted-foreground">
+                      Organize e documente seus projetos
+                    </p>
+                  </div>
+                  <Button 
+                    onClick={handleCreateProject}
+                    data-testid="button-create-project"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Novo Projeto
+                  </Button>
+                </div>
               </div>
-              <Button 
-                onClick={handleCreateProject}
-                data-testid="button-create-project"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Novo Projeto
-              </Button>
-            </div>
-          </div>
-        </header>
+            </header>
 
-        {/* Projects Grid */}
-        <main className="p-6">
-          {projects.length === 0 ? (
-            <div className="text-center py-12" data-testid="empty-state">
-              <FolderOpen className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-foreground mb-2">
-                Nenhum projeto encontrado
-              </h3>
-              <p className="text-muted-foreground mb-6">
-                Comece criando seu primeiro projeto de documentação.
-              </p>
-              <Button onClick={handleCreateProject}>
-                <Plus className="h-4 w-4 mr-2" />
-                Criar Primeiro Projeto
-              </Button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {projects.map((project) => (
-                <ProjectCard
-                  key={project.id}
-                  project={project}
-                  onEdit={handleEditProject}
-                  onView={handleViewProject}
-                />
-              ))}
-            </div>
-          )}
-        </main>
+            {/* Projects Grid */}
+            <main className="p-6">
+              {projects.length === 0 ? (
+                <div className="text-center py-12" data-testid="empty-state">
+                  <FolderOpen className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-foreground mb-2">
+                    Nenhum projeto encontrado
+                  </h3>
+                  <p className="text-muted-foreground mb-6">
+                    Comece criando seu primeiro projeto de documentação.
+                  </p>
+                  <Button onClick={handleCreateProject}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Criar Primeiro Projeto
+                  </Button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {projects.map((project) => (
+                    <ProjectCard
+                      key={project.id}
+                      project={project}
+                      onEdit={handleEditProject}
+                      onView={handleViewProject}
+                    />
+                  ))}
+                </div>
+              )}
+            </main>
+          </>
+        )}
+
+        {activeSection === "categories" && (
+          <main className="p-6">
+            <CategoriesManagement />
+          </main>
+        )}
+
+        {activeSection === "tools" && (
+          <main className="p-6">
+            <ToolsManagement />
+          </main>
+        )}
+
+        {activeSection === "settings" && (
+          <main className="p-6">
+            <Settings />
+          </main>
+        )}
       </div>
     </div>
   );

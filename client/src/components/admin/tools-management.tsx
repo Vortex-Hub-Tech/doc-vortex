@@ -27,7 +27,7 @@ export function ToolsManagement() {
     resolver: zodResolver(insertToolSchema),
     defaultValues: {
       name: "",
-      description: "",
+      slug: "",
       categoryId: "",
     },
   });
@@ -98,8 +98,8 @@ export function ToolsManagement() {
     setEditingTool(tool);
     form.reset({
       name: tool.name,
-      description: tool.description || "",
-      categoryId: tool.categoryId,
+      slug: tool.slug,
+      categoryId: tool.categoryId || "",
     });
     setIsDialogOpen(true);
   };
@@ -114,12 +114,13 @@ export function ToolsManagement() {
     saveToolMutation.mutate(data);
   };
 
-  const getCategoryName = (categoryId: string) => {
+  const getCategoryName = (categoryId: string | null) => {
+    if (!categoryId) return "Sem categoria";
     const category = categories.find(c => c.id === categoryId);
     return category?.name || "Sem categoria";
   };
 
-  const getCategoryColor = (categoryId: string) => {
+  const getCategoryColor = (categoryId: string | null) => {
     const categoryName = getCategoryName(categoryId);
     const colors: Record<string, string> = {
       "IA": "bg-blue-100 text-blue-800",
@@ -211,15 +212,15 @@ export function ToolsManagement() {
                 />
                 <FormField
                   control={form.control}
-                  name="description"
+                  name="slug"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Descrição (opcional)</FormLabel>
+                      <FormLabel>Slug</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="Descrição da ferramenta..."
+                          placeholder="python, openai, postgresql..."
                           {...field}
-                          data-testid="input-tool-description"
+                          data-testid="input-tool-slug"
                         />
                       </FormControl>
                       <FormMessage />
@@ -296,11 +297,9 @@ export function ToolsManagement() {
                 <h3 className="font-medium text-foreground mb-2" data-testid={`text-tool-name-${tool.id}`}>
                   {tool.name}
                 </h3>
-                {tool.description && (
-                  <p className="text-sm text-muted-foreground" data-testid={`text-tool-description-${tool.id}`}>
-                    {tool.description}
-                  </p>
-                )}
+                <p className="text-xs text-muted-foreground" data-testid={`text-tool-slug-${tool.id}`}>
+                  /{tool.slug}
+                </p>
               </CardContent>
             </Card>
           ))}
