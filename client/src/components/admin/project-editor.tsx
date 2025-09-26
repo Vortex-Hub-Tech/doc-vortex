@@ -120,6 +120,26 @@ export function ProjectEditor({ projectId, onBack, onSave }: ProjectEditorProps)
     saveProjectMutation.mutate(formData);
   };
 
+  const handlePublish = () => {
+    const formValues = form.getValues();
+    const formData = {
+      ...formValues,
+      links: links,
+      status: "published",
+    };
+    saveProjectMutation.mutate(formData);
+  };
+
+  const handleSaveDraft = () => {
+    const formValues = form.getValues();
+    const formData = {
+      ...formValues,
+      links: links,
+      status: "draft",
+    };
+    saveProjectMutation.mutate(formData);
+  };
+
   const addLink = () => {
     if (newLink.title && newLink.url) {
       setLinks([...links, newLink]);
@@ -162,13 +182,14 @@ export function ProjectEditor({ projectId, onBack, onSave }: ProjectEditorProps)
             <div className="flex space-x-3">
               <Button
                 variant="outline"
-                onClick={() => form.setValue("status", "draft")}
+                onClick={handleSaveDraft}
+                disabled={saveProjectMutation.isPending}
                 data-testid="button-save-draft"
               >
                 Rascunho
               </Button>
               <Button
-                onClick={form.handleSubmit(onSubmit)}
+                onClick={handlePublish}
                 disabled={saveProjectMutation.isPending}
                 data-testid="button-publish"
               >
