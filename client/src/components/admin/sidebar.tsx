@@ -2,6 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { FolderOpen, Tags, Wrench, Settings, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { VortexLogo } from "@/components/vortex-logo";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 
 interface SidebarProps {
   activeSection: string;
@@ -20,15 +22,18 @@ export function Sidebar({ activeSection, onSectionChange, onLogout }: SidebarPro
   return (
     <div className="fixed inset-y-0 left-0 w-64 bg-card border-r border-border shadow-sm">
       <div className="flex items-center justify-between h-16 px-6 border-b border-border">
-        <h1 className="font-semibold text-lg text-foreground">Admin Panel</h1>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onLogout}
-          data-testid="button-logout"
-        >
-          <LogOut className="h-4 w-4" />
-        </Button>
+        <VortexLogo size="sm" />
+        <div className="flex items-center space-x-2">
+          <ThemeSwitcher />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onLogout}
+            data-testid="button-logout"
+          >
+            <LogOut className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
       
       <nav className="mt-6 px-3">

@@ -5,6 +5,8 @@ import { ProjectGrid } from "@/components/public/project-grid";
 import { type ProjectWithRelations, type Category } from "@shared/schema";
 import { useLocation } from "wouter";
 import { LogIn } from "lucide-react";
+import { VortexLogo } from "@/components/vortex-logo";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 
 export default function PublicProjectsPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -50,17 +52,18 @@ export default function PublicProjectsPage() {
       <header className="bg-card border-b border-border shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <h1 className="text-xl font-bold text-foreground">
-              Documentação de Projetos
-            </h1>
-            <Button 
-              variant="ghost"
-              onClick={handleLogin}
-              data-testid="button-login"
-            >
-              <LogIn className="h-4 w-4 mr-2" />
-              Admin
-            </Button>
+            <VortexLogo size="md" />
+            <div className="flex items-center space-x-2">
+              <ThemeSwitcher />
+              <Button 
+                variant="ghost"
+                onClick={handleLogin}
+                data-testid="button-login"
+              >
+                <LogIn className="h-4 w-4 mr-2" />
+                Admin
+              </Button>
+            </div>
           </div>
         </div>
       </header>

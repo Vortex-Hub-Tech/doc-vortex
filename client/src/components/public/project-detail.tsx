@@ -5,6 +5,8 @@ import { MarkdownRenderer } from "@/components/markdown/markdown-renderer";
 import { type ProjectWithRelations } from "@shared/schema";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { useState } from "react";
+import { VortexLogo } from "@/components/vortex-logo";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 
 interface ProjectDetailProps {
   project: ProjectWithRelations;
@@ -46,6 +48,7 @@ export function ProjectDetail({ project, onBack }: ProjectDetailProps) {
               >
                 <ArrowLeft className="h-4 w-4" />
               </Button>
+              <VortexLogo size="sm" />
               <h1 className="text-xl font-bold text-foreground" data-testid="text-project-title">
                 {project.title}
               </h1>
@@ -57,6 +60,7 @@ export function ProjectDetail({ project, onBack }: ProjectDetailProps) {
               <span className="text-sm text-muted-foreground">
                 {project.tool?.name || "Sem ferramenta"}
               </span>
+              <ThemeSwitcher />
             </div>
           </div>
         </div>
