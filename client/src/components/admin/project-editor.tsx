@@ -309,7 +309,7 @@ export function ProjectEditor({ projectId, onBack, onSave }: ProjectEditorProps)
               <ImageUpload
                 projectId={projectId}
                 onThumbnailChange={(url) => form.setValue("thumbnailUrl", url)}
-                currentThumbnail={form.watch("thumbnailUrl")}
+                currentThumbnail={form.watch("thumbnailUrl") || ""}
               />
 
               {/* Content Editor */}
