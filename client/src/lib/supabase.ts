@@ -15,17 +15,17 @@ export class SupabaseStorage {
 
   async uploadFile(bucket: string, path: string, file: File): Promise<string> {
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
 
     const response = await fetch(
       `${this.baseUrl}/storage/v1/object/${bucket}/${path}`,
       {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${this.anonKey}`,
+          Authorization: `Bearer ${this.anonKey}`,
         },
         body: formData,
-      }
+      },
     );
 
     if (!response.ok) {
@@ -39,11 +39,11 @@ export class SupabaseStorage {
     const response = await fetch(
       `${this.baseUrl}/storage/v1/object/${bucket}/${path}`,
       {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-          'Authorization': `Bearer ${this.anonKey}`,
+          Authorization: `Bearer ${this.anonKey}`,
         },
-      }
+      },
     );
 
     if (!response.ok && response.status !== 404) {
