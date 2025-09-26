@@ -1,5 +1,5 @@
-import { drizzle } from "drizzle-orm/neon-http";
-import { neon } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
 import { 
   type User, type InsertUser,
   type Category, type InsertCategory,
@@ -54,7 +54,10 @@ class DatabaseStorage implements IStorage {
     if (!process.env.DATABASE_URL) {
       throw new Error("DATABASE_URL environment variable is required");
     }
-    const sql = neon(process.env.DATABASE_URL);
+    const sql = postgres(process.env.DATABASE_URL, { 
+      ssl: 'require',
+      max: 1 
+    });
     this.db = drizzle(sql);
   }
 
@@ -105,7 +108,7 @@ class DatabaseStorage implements IStorage {
 
   async deleteCategory(id: string): Promise<boolean> {
     const result = await this.db.delete(categories).where(eq(categories.id, id));
-    return result.rowCount > 0;
+    return result.length > 0;
   }
 
   // Tools
@@ -141,7 +144,7 @@ class DatabaseStorage implements IStorage {
 
   async deleteTool(id: string): Promise<boolean> {
     const result = await this.db.delete(tools).where(eq(tools.id, id));
-    return result.rowCount > 0;
+    return result.length > 0;
   }
 
   // Projects
@@ -259,7 +262,8 @@ class DatabaseStorage implements IStorage {
       status: insertProject.status || "draft",
       categoryId: insertProject.categoryId || null,
       toolId: insertProject.toolId || null,
-      thumbnailUrl: insertProject.thumbnailUrl || null
+      thumbnailUrl: insertProject.thumbnailUrl || null,
+      links: insertProject.links || []
     };
     await this.db.insert(projects).values(project);
     return project;
@@ -274,7 +278,7 @@ class DatabaseStorage implements IStorage {
 
   async deleteProject(id: string): Promise<boolean> {
     const result = await this.db.delete(projects).where(eq(projects.id, id));
-    return result.rowCount > 0;
+    return result.length > 0;
   }
 
   // Project Images
@@ -302,7 +306,7 @@ class DatabaseStorage implements IStorage {
 
   async deleteProjectImage(id: string): Promise<boolean> {
     const result = await this.db.delete(projectImages).where(eq(projectImages.id, id));
-    return result.rowCount > 0;
+    return result.length > 0;
   }
 }
 
