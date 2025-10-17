@@ -17,7 +17,7 @@ import { ImageUpload } from "@/components/admin/image-upload";
 import { ArrowLeft, Save } from "lucide-react";
 import { z } from "zod";
 
-const projectFormSchema = insertProjectSchema.extend({
+const projectFormSchema = insertProjectSchema.omit({ authorId: true }).extend({
   links: z.array(z.object({
     title: z.string().min(1, "Título é obrigatório"),
     url: z.string().url("URL inválida"),
