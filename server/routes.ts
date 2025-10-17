@@ -303,15 +303,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/projects", requireAuth, async (req, res) => {
     try {
+      // Validate body without authorId (it comes from session)
       const validatedData = insertProjectSchema.parse(req.body);
 
+      // Create project with authorId from session
       const project = await storage.createProject({
         ...validatedData,
         authorId: req.session.userId!,
       });
       res.status(201).json(project);
     } catch (error) {
-      res.status(500).json({ message: error });
+      console.error("Error creating project:", error);
+      res.status(500).json({ message: "Erro ao criar projeto" });
     }
   });
 

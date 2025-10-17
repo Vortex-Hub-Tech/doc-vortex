@@ -74,6 +74,7 @@ export const insertProjectSchema = createInsertSchema(projects).omit({
   createdAt: true,
   updatedAt: true,
   slug: true,
+  authorId: true, // authorId comes from session, not request body
 });
 
 export const insertProjectImageSchema = createInsertSchema(projectImages).omit({
