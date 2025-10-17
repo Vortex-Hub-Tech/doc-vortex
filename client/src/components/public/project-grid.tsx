@@ -86,6 +86,14 @@ export function ProjectGrid({ projects, onProjectClick }: ProjectGridProps) {
               {project.shortDescription}
             </p>
             
+            {project.author && (
+              <div className="flex items-center text-sm text-muted-foreground mb-3" data-testid={`text-author-${project.id}`}>
+                <span className="font-medium">{project.author.name}</span>
+                <span className="mx-1">•</span>
+                <span>{project.author.role}</span>
+              </div>
+            )}
+            
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground" data-testid={`text-date-${project.id}`}>
                 {formatDate(project.createdAt)}

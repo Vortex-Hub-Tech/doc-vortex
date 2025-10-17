@@ -65,6 +65,14 @@ export function ProjectCard({ project, onEdit, onView }: ProjectCardProps) {
           {project.shortDescription}
         </p>
         
+        {project.author && (
+          <div className="mb-3 flex items-center text-xs text-muted-foreground" data-testid={`text-author-${project.id}`}>
+            <span className="font-medium">{project.author.name}</span>
+            <span className="mx-1">•</span>
+            <span>{project.author.role}</span>
+          </div>
+        )}
+        
         <div className="flex items-center justify-between">
           <span className="text-xs text-muted-foreground" data-testid={`text-project-updated-${project.id}`}>
             {formatDate(project.updatedAt)}

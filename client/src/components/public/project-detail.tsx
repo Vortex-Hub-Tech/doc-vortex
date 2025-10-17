@@ -81,9 +81,18 @@ export function ProjectDetail({ project, onBack }: ProjectDetailProps) {
         )}
 
         <div className="mb-8">
-          <p className="text-lg text-muted-foreground" data-testid="text-description">
+          <p className="text-lg text-muted-foreground mb-4" data-testid="text-description">
             {project.shortDescription}
           </p>
+          
+          {project.author && (
+            <div className="flex items-center text-sm text-muted-foreground" data-testid="text-author">
+              <span className="font-semibold text-foreground">Postado por:</span>
+              <span className="ml-2 font-medium">{project.author.name}</span>
+              <span className="mx-2">•</span>
+              <span>{project.author.role}</span>
+            </div>
+          )}
         </div>
 
         {/* Project Documentation */}
