@@ -1,6 +1,6 @@
 # Overview
 
-This is a full-stack project documentation system built with React on the frontend and Express.js on the backend. The application serves as a complete content management system for technical projects, allowing administrators to create, edit, and manage project documentation while providing a public-facing interface for users to browse published projects. The system features a clean, modern UI with markdown support for rich content creation and a comprehensive admin panel with multiple management areas.
+This is a corporate Knowledge Base system for Vortex Hub, built with React on the frontend and Express.js on the backend. The application is an internal platform exclusively for Vortex Hub employees, focused on N8N and AI technologies. All content requires authentication to access, and all projects display author information (name and role) to track who contributed each piece of knowledge. The system features a clean, modern UI with markdown support for rich content creation and a comprehensive admin panel with multiple management areas.
 
 # User Preferences
 
@@ -24,17 +24,18 @@ Preferred communication style: Simple, everyday language.
 - **File Structure**: Modular design with separate route handlers and storage abstraction layer
 
 ## Database Design
-- **Users Table**: Stores admin credentials with bcrypt password hashing
-- **Categories Table**: Organizes projects into different categories (IA, Automação, Bot, etc.)
-- **Tools Table**: Represents specific tools/technologies used in projects
-- **Projects Table**: Main content table with title, description, markdown content, and publication status
+- **Users Table**: Stores employee credentials with bcrypt password hashing, includes name and role fields for author attribution
+- **Categories Table**: Organizes projects into different categories (N8N, Inteligência Artificial, Automação, etc.)
+- **Tools Table**: Represents specific tools/technologies used in projects (focused on N8N and AI tools)
+- **Projects Table**: Main content table with title, description, markdown content, publication status, and authorId for tracking who created each project
 - **Project Images Table**: Stores project image metadata with ordering support
 
 ## Authentication & Authorization
 - **Session Management**: Server-side sessions with PostgreSQL storage for persistence
 - **Password Security**: bcrypt for password hashing with salt rounds
-- **Route Protection**: Middleware-based authentication for admin routes
-- **Public Access**: Unauthenticated access to published project content
+- **Route Protection**: ALL routes require authentication - this is an internal corporate Knowledge Base
+- **Employee Access Only**: No public access - all users must be registered Vortex Hub employees
+- **Author Tracking**: Every project automatically records who created it (authorId)
 
 ## Content Management
 - **Rich Text Editing**: Custom markdown editor with toolbar and live preview
@@ -52,6 +53,15 @@ Preferred communication style: Simple, everyday language.
 - **Development Experience**: Auto-reload and error overlay for rapid iteration
 
 # Recent Changes
+
+## 2025-10-17: Corporate Knowledge Base Transformation
+- ✅ **Author Attribution System**: Added name and role fields to users table for tracking content creators
+- ✅ **Project Authorship**: Projects now track who created them via authorId field
+- ✅ **Mandatory Authentication**: All routes protected - login required for any system access
+- ✅ **Author Display**: Project cards and detail pages show author information (name and role)
+- ✅ **N8N & AI Focus**: Updated categories and tools to emphasize N8N and AI technologies
+- ✅ **Employee-Only Access**: System now restricted to registered Vortex Hub employees only
+- ✅ **Setup Endpoint**: Configured to create initial admin user with complete profile
 
 ## 2025-09-26: Complete Admin Panel Implementation
 - ✅ **Categories Management**: Full CRUD operations with form validation and UI
