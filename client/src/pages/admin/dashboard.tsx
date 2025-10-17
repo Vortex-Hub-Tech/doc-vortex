@@ -65,6 +65,10 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleViewPublic = () => {
+    window.open("/", "_blank");
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -82,6 +86,7 @@ export default function AdminDashboard() {
         activeSection={activeSection}
         onSectionChange={setActiveSection}
         onLogout={handleLogout}
+        onViewPublic={handleViewPublic}
       />
 
       {/* Main Content */}

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { FolderOpen, Tags, Wrench, Settings, LogOut } from "lucide-react";
+import { FolderOpen, Tags, Wrench, Settings, LogOut, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { VortexLogo } from "@/components/vortex-logo";
 import { ThemeSwitcher } from "@/components/theme-switcher";
@@ -9,9 +9,10 @@ interface SidebarProps {
   activeSection: string;
   onSectionChange: (section: string) => void;
   onLogout: () => void;
+  onViewPublic: () => void;
 }
 
-export function Sidebar({ activeSection, onSectionChange, onLogout }: SidebarProps) {
+export function Sidebar({ activeSection, onSectionChange, onLogout, onViewPublic }: SidebarProps) {
   const menuItems = [
     { id: "projects", label: "Projetos", icon: FolderOpen },
     { id: "categories", label: "Categorias", icon: Tags },
@@ -57,6 +58,18 @@ export function Sidebar({ activeSection, onSectionChange, onLogout }: SidebarPro
             );
           })}
         </div>
+
+        <Separator className="my-4" />
+
+        <Button
+          variant="outline"
+          className="w-full justify-start font-medium"
+          onClick={onViewPublic}
+          data-testid="button-view-public"
+        >
+          <Eye className="mr-3 h-4 w-4" />
+          Ver Projetos Públicos
+        </Button>
       </nav>
     </div>
   );
