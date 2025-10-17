@@ -30,7 +30,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   const requireAuth = (req: any, res: any, next: any) => {
     if (!req.session.userId) {
-      return res.status(401).json({ message: "Não autorizado" });
+      // Redirect to login if not authenticated
+      return res.status(401).json({ message: "Não autorizado", redirect: "/login" });
     }
     next();
   };

@@ -41,7 +41,7 @@ function Router() {
     <Switch>
       {/* Auth routes */}
       <Route path="/login" component={LoginPage} />
-      
+
       {/* Protected routes - require authentication */}
       <Route path="/">
         {() => <ProtectedRoute component={PublicProjectsPage} />}
@@ -49,7 +49,7 @@ function Router() {
       <Route path="/project/:slug">
         {(params) => <ProtectedRoute component={ProjectDetailPage} {...params} />}
       </Route>
-      
+
       {/* Admin routes */}
       <Route path="/admin">
         {() => <ProtectedRoute component={AdminDashboard} />}
@@ -57,7 +57,7 @@ function Router() {
       <Route path="/admin/project/:id">
         {(params) => <ProtectedRoute component={ProjectEditorPage} {...params} />}
       </Route>
-      
+
       {/* Fallback */}
       <Route component={NotFound} />
     </Switch>
