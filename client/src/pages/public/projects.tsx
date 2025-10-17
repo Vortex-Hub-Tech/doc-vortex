@@ -27,12 +27,12 @@ export default function PublicProjectsPage() {
   };
 
   const handleLogin = () => {
-    setLocation("/login");
+    setLocation("/admin");
   };
 
   // Filter projects by category
   const filteredProjects = selectedCategory
-    ? projects.filter(project => project.categoryId === selectedCategory)
+    ? projects.filter((project) => project.categoryId === selectedCategory)
     : projects;
 
   if (isLoading) {
@@ -55,7 +55,7 @@ export default function PublicProjectsPage() {
             <VortexLogo size="md" />
             <div className="flex items-center space-x-2">
               <ThemeSwitcher />
-              <Button 
+              <Button
                 variant="ghost"
                 onClick={handleLogin}
                 data-testid="button-login"
@@ -85,7 +85,9 @@ export default function PublicProjectsPage() {
               {categories.map((category) => (
                 <Button
                   key={category.id}
-                  variant={selectedCategory === category.id ? "default" : "outline"}
+                  variant={
+                    selectedCategory === category.id ? "default" : "outline"
+                  }
                   size="sm"
                   onClick={() => setSelectedCategory(category.id)}
                   className="whitespace-nowrap"
