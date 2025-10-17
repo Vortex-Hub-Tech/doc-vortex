@@ -55,7 +55,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       req.session.userId = user.id;
-      res.json({ user: { id: user.id, email: user.email } });
+      res.json({ user: { id: user.id, name: user.name, email: user.email, role: user.role } });
     } catch (error) {
       res.status(500).json({ message: "Erro interno do servidor" });
     }
@@ -71,7 +71,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         password: hashedPassword,
       });
 
-      res.status(201).json({ user: { id: user.id, email: user.email } });
+      res.status(201).json({ user: { id: user.id, name: user.name, email: user.email, role: user.role } });
     } catch (error) {
       if (error instanceof Error && error.message.includes("unique")) {
         return res.status(409).json({ message: "Email já está em uso" });
@@ -96,7 +96,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!user) {
         return res.status(404).json({ message: "Usuário não encontrado" });
       }
-      res.json({ user: { id: user.id, email: user.email } });
+      res.json({ user: { id: user.id, name: user.name, email: user.email, role: user.role } });
     } catch (error) {
       res.status(500).json({ message: "Erro interno do servidor" });
     }
@@ -114,8 +114,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create admin user
       const hashedPassword = await bcrypt.hash("admin123", 10);
       const adminUser = await storage.createUser({
+        name: "Administrador",
         email: "admin@sistema.com",
         password: hashedPassword,
+        role: "Administrador",
       });
 
       // Create sample categories
@@ -162,7 +164,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Categories routes
-  app.get("/api/categories", async (req, res) => {
+  app.get("/api/categories", requireAuth, async (req, res) => {
     try {
       const categories = await storage.getAllCategories();
       res.json(categories);
@@ -182,7 +184,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Tools routes
-  app.get("/api/tools", async (req, res) => {
+  app.get("/api/tools", requireAuth, async (req, res) => {
     try {
       const tools = await storage.getAllTools();
       res.json(tools);
@@ -191,7 +193,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/tools/category/:categoryId", async (req, res) => {
+  app.get("/api/tools/category/:categoryId", requireAuth, async (req, res) => {
     try {
       const tools = await storage.getToolsByCategory(req.params.categoryId);
       res.json(tools);
@@ -211,19 +213,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Projects routes
-  app.get("/api/projects", async (req, res) => {
+  app.get("/api/projects", requireAuth, async (req, res) => {
     try {
-      const isAdmin = req.session.userId;
-      const projects = isAdmin
-        ? await storage.getAllProjects()
-        : await storage.getPublishedProjects();
+      const projects = await storage.getAllProjects();
       res.json(projects);
     } catch (error) {
       res.status(500).json({ message: "Erro ao buscar projetos" });
     }
   });
 
-  app.get("/api/projects/public", async (req, res) => {
+  app.get("/api/projects/public", requireAuth, async (req, res) => {
     try {
       const projects = await storage.getPublishedProjects();
       res.json(projects);
@@ -232,16 +231,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/projects/:id", async (req, res) => {
+  app.get("/api/projects/:id", requireAuth, async (req, res) => {
     try {
       const project = await storage.getProject(req.params.id);
       if (!project) {
         return res.status(404).json({ message: "Projeto não encontrado" });
-      }
-
-      // Check if project is published or user is admin
-      if (project.status !== "published" && !req.session.userId) {
-        return res.status(403).json({ message: "Acesso negado" });
       }
 
       res.json(project);
@@ -250,16 +244,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/projects/slug/:slug", async (req, res) => {
+  app.get("/api/projects/slug/:slug", requireAuth, async (req, res) => {
     try {
       const project = await storage.getProjectBySlug(req.params.slug);
       if (!project) {
         return res.status(404).json({ message: "Projeto não encontrado" });
-      }
-
-      // Check if project is published or user is admin
-      if (project.status !== "published" && !req.session.userId) {
-        return res.status(403).json({ message: "Acesso negado" });
       }
 
       res.json(project);
@@ -272,19 +261,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const validatedData = insertProjectSchema.parse(req.body);
 
-      // Generate slug from title
-      const slug = validatedData.title
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-z0-9\s-]/g, "")
-        .replace(/\s+/g, "-")
-        .replace(/-+/g, "-")
-        .trim();
-
       const project = await storage.createProject({
         ...validatedData,
-        slug,
+        authorId: req.session.userId!,
       });
       res.status(201).json(project);
     } catch (error) {
@@ -295,18 +274,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/projects/:id", requireAuth, async (req, res) => {
     try {
       const validatedData = insertProjectSchema.partial().parse(req.body);
-
-      // Regenerate slug if title changed
-      if (validatedData.title) {
-        validatedData.slug = validatedData.title
-          .toLowerCase()
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "")
-          .replace(/[^a-z0-9\s-]/g, "")
-          .replace(/\s+/g, "-")
-          .replace(/-+/g, "-")
-          .trim();
-      }
 
       const project = await storage.updateProject(req.params.id, validatedData);
       if (!project) {

@@ -96,7 +96,12 @@ class DatabaseStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = randomUUID();
-    const user: User = { ...insertUser, id, createdAt: new Date() };
+    const user: User = { 
+      ...insertUser, 
+      id, 
+      createdAt: new Date(),
+      role: insertUser.role || "Desenvolvedor"
+    };
     await this.db.insert(users).values(user);
     return user;
   }
@@ -193,19 +198,26 @@ class DatabaseStorage implements IStorage {
         project: projects,
         category: categories,
         tool: tools,
+        author: users,
       })
       .from(projects)
       .leftJoin(categories, eq(projects.categoryId, categories.id))
       .leftJoin(tools, eq(projects.toolId, tools.id))
+      .leftJoin(users, eq(projects.authorId, users.id))
       .orderBy(projects.updatedAt);
 
     const projectsWithImages = await Promise.all(
       result.map(async (row) => {
         const images = await this.getProjectImages(row.project.id);
+        const author = row.author ? (() => {
+          const { password, ...rest } = row.author;
+          return rest;
+        })() : undefined;
         return {
           ...row.project,
           category: row.category || undefined,
           tool: row.tool || undefined,
+          author,
           images,
         };
       }),
@@ -220,20 +232,27 @@ class DatabaseStorage implements IStorage {
         project: projects,
         category: categories,
         tool: tools,
+        author: users,
       })
       .from(projects)
       .leftJoin(categories, eq(projects.categoryId, categories.id))
       .leftJoin(tools, eq(projects.toolId, tools.id))
+      .leftJoin(users, eq(projects.authorId, users.id))
       .where(eq(projects.status, "published"))
       .orderBy(projects.updatedAt);
 
     const projectsWithImages = await Promise.all(
       result.map(async (row) => {
         const images = await this.getProjectImages(row.project.id);
+        const author = row.author ? (() => {
+          const { password, ...rest } = row.author;
+          return rest;
+        })() : undefined;
         return {
           ...row.project,
           category: row.category || undefined,
           tool: row.tool || undefined,
+          author,
           images,
         };
       }),
@@ -248,20 +267,27 @@ class DatabaseStorage implements IStorage {
         project: projects,
         category: categories,
         tool: tools,
+        author: users,
       })
       .from(projects)
       .leftJoin(categories, eq(projects.categoryId, categories.id))
       .leftJoin(tools, eq(projects.toolId, tools.id))
+      .leftJoin(users, eq(projects.authorId, users.id))
       .where(eq(projects.id, id));
 
     if (!result[0]) return undefined;
 
     const images = await this.getProjectImages(id);
+    const author = result[0].author ? (() => {
+      const { password, ...rest } = result[0].author;
+      return rest;
+    })() : undefined;
 
     return {
       ...result[0].project,
       category: result[0].category || undefined,
       tool: result[0].tool || undefined,
+      author,
       images,
     };
   }
@@ -274,20 +300,27 @@ class DatabaseStorage implements IStorage {
         project: projects,
         category: categories,
         tool: tools,
+        author: users,
       })
       .from(projects)
       .leftJoin(categories, eq(projects.categoryId, categories.id))
       .leftJoin(tools, eq(projects.toolId, tools.id))
+      .leftJoin(users, eq(projects.authorId, users.id))
       .where(eq(projects.slug, slug));
 
     if (!result[0]) return undefined;
 
     const images = await this.getProjectImages(result[0].project.id);
+    const author = result[0].author ? (() => {
+      const { password, ...rest } = result[0].author;
+      return rest;
+    })() : undefined;
 
     return {
       ...result[0].project,
       category: result[0].category || undefined,
       tool: result[0].tool || undefined,
+      author,
       images,
     };
   }
@@ -295,9 +328,14 @@ class DatabaseStorage implements IStorage {
   async createProject(insertProject: InsertProject): Promise<Project> {
     const id = randomUUID();
     const now = new Date();
+    const slug = insertProject.title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
     const project: Project = {
       ...insertProject,
       id,
+      slug,
       createdAt: now,
       updatedAt: now,
       status: insertProject.status || "draft",
