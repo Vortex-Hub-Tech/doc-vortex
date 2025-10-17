@@ -21,7 +21,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       cookie: {
         secure: false,
         httpOnly: true,
-        sameSite: 'lax',
+        sameSite: "lax",
         maxAge: 24 * 60 * 60 * 1000, // 24 hours
       },
     }),
@@ -57,7 +57,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       req.session.userId = user.id;
-      res.json({ user: { id: user.id, name: user.name, email: user.email, role: user.role } });
+      res.json({
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+      });
     } catch (error) {
       res.status(500).json({ message: "Erro interno do servidor" });
     }
@@ -73,7 +80,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         password: hashedPassword,
       });
 
-      res.status(201).json({ user: { id: user.id, name: user.name, email: user.email, role: user.role } });
+      res.status(201).json({
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+      });
     } catch (error) {
       if (error instanceof Error && error.message.includes("unique")) {
         return res.status(409).json({ message: "Email já está em uso" });
@@ -98,7 +112,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!user) {
         return res.status(404).json({ message: "Usuário não encontrado" });
       }
-      res.json({ user: { id: user.id, name: user.name, email: user.email, role: user.role } });
+      res.json({
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+      });
     } catch (error) {
       res.status(500).json({ message: "Erro interno do servidor" });
     }
@@ -124,7 +145,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Create categories focused on N8N and AI
       const categories = [
-        { name: "Inteligência Artificial", slug: "inteligencia-artificial", color: "#8B5CF6" },
+        {
+          name: "Inteligência Artificial",
+          slug: "inteligencia-artificial",
+          color: "#8B5CF6",
+        },
         { name: "N8N", slug: "n8n", color: "#FF6D5A" },
         { name: "Automação", slug: "automacao", color: "#10B981" },
         { name: "Integração", slug: "integracao", color: "#F59E0B" },
@@ -136,17 +161,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Create tools focused on N8N and AI
       const allCategories = await storage.getAllCategories();
-      const iaCategory = allCategories.find((cat) => cat.slug === "inteligencia-artificial");
+      const iaCategory = allCategories.find(
+        (cat) => cat.slug === "inteligencia-artificial",
+      );
       const n8nCategory = allCategories.find((cat) => cat.slug === "n8n");
-      const automacaoCategory = allCategories.find((cat) => cat.slug === "automacao");
+      const automacaoCategory = allCategories.find(
+        (cat) => cat.slug === "automacao",
+      );
 
       const tools = [
-        { name: "OpenAI GPT-4", slug: "openai-gpt4", categoryId: iaCategory?.id },
+        {
+          name: "OpenAI GPT-4",
+          slug: "openai-gpt4",
+          categoryId: iaCategory?.id,
+        },
         { name: "Claude AI", slug: "claude-ai", categoryId: iaCategory?.id },
         { name: "Gemini", slug: "gemini", categoryId: iaCategory?.id },
-        { name: "N8N Workflows", slug: "n8n-workflows", categoryId: n8nCategory?.id },
+        {
+          name: "N8N Workflows",
+          slug: "n8n-workflows",
+          categoryId: n8nCategory?.id,
+        },
         { name: "N8N API", slug: "n8n-api", categoryId: n8nCategory?.id },
-        { name: "Make (Integromat)", slug: "make", categoryId: automacaoCategory?.id },
+        {
+          name: "Make (Integromat)",
+          slug: "make",
+          categoryId: automacaoCategory?.id,
+        },
       ];
 
       for (const tool of tools) {
