@@ -120,11 +120,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         role: "Administrador",
       });
 
-      // Create sample categories
+      // Create categories focused on N8N and AI
       const categories = [
-        { name: "IA", slug: "ia", color: "#3B82F6" },
+        { name: "Inteligência Artificial", slug: "inteligencia-artificial", color: "#8B5CF6" },
+        { name: "N8N", slug: "n8n", color: "#FF6D5A" },
         { name: "Automação", slug: "automacao", color: "#10B981" },
-        { name: "Bot", slug: "bot", color: "#8B5CF6" },
         { name: "Integração", slug: "integracao", color: "#F59E0B" },
       ];
 
@@ -132,18 +132,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await storage.createCategory(category);
       }
 
-      // Create sample tools
+      // Create tools focused on N8N and AI
       const allCategories = await storage.getAllCategories();
-      const iaCategory = allCategories.find((cat) => cat.slug === "ia");
-      const automacaoCategory = allCategories.find(
-        (cat) => cat.slug === "automacao",
-      );
+      const iaCategory = allCategories.find((cat) => cat.slug === "inteligencia-artificial");
+      const n8nCategory = allCategories.find((cat) => cat.slug === "n8n");
+      const automacaoCategory = allCategories.find((cat) => cat.slug === "automacao");
 
       const tools = [
-        { name: "OpenAI", slug: "openai", categoryId: iaCategory?.id },
-        { name: "n8n", slug: "n8n", categoryId: automacaoCategory?.id },
-        { name: "Zapier", slug: "zapier", categoryId: automacaoCategory?.id },
-        { name: "Claude", slug: "claude", categoryId: iaCategory?.id },
+        { name: "OpenAI GPT-4", slug: "openai-gpt4", categoryId: iaCategory?.id },
+        { name: "Claude AI", slug: "claude-ai", categoryId: iaCategory?.id },
+        { name: "Gemini", slug: "gemini", categoryId: iaCategory?.id },
+        { name: "N8N Workflows", slug: "n8n-workflows", categoryId: n8nCategory?.id },
+        { name: "N8N API", slug: "n8n-api", categoryId: n8nCategory?.id },
+        { name: "Make (Integromat)", slug: "make", categoryId: automacaoCategory?.id },
       ];
 
       for (const tool of tools) {
