@@ -5,8 +5,10 @@ import { z } from "zod";
 
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
   email: text("email").notNull().unique(),
   password: text("password").notNull(),
+  role: text("role").notNull().default("Desenvolvedor"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -34,6 +36,7 @@ export const projects = pgTable("projects", {
   content: text("content").notNull(),
   categoryId: varchar("category_id").references(() => categories.id),
   toolId: varchar("tool_id").references(() => tools.id),
+  authorId: varchar("author_id").references(() => users.id).notNull(),
   status: text("status").notNull().default("draft"), // draft, published, archived
   links: jsonb("links").default('[]'), // Array of {title: string, url: string}
   thumbnailUrl: text("thumbnail_url"),
@@ -99,4 +102,5 @@ export type ProjectWithRelations = Project & {
   category?: Category;
   tool?: Tool;
   images?: ProjectImage[];
+  author?: Omit<User, 'password'>;
 };
