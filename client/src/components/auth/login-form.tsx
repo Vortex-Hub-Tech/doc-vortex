@@ -61,7 +61,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
                 data-testid="input-email"
               />
             </div>
-            
+
             <div>
               <Label htmlFor="password">Senha</Label>
               <div className="relative">
@@ -90,10 +90,10 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
                 </Button>
               </div>
             </div>
-            
-            <Button 
-              type="submit" 
-              className="w-full" 
+
+            <Button
+              type="submit"
+              className="w-full"
               disabled={isLoading}
               data-testid="button-submit"
             >
