@@ -27,6 +27,10 @@ export default function AdminDashboard() {
   const logoutMutation = useMutation({
     mutationFn: () => apiRequest("POST", "/api/auth/logout", {}),
     onSuccess: () => {
+      // Invalidate auth cache to prevent stale data
+      queryClient.setQueryData(["/api/auth/me"], null);
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+      
       toast({
         title: "Logout realizado",
         description: "Você foi desconectado com sucesso.",
@@ -34,7 +38,9 @@ export default function AdminDashboard() {
       setLocation("/login");
     },
     onError: () => {
-      // Even if logout fails on server, redirect to login
+      // Even if logout fails on server, clear cache and redirect to login
+      queryClient.setQueryData(["/api/auth/me"], null);
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
       setLocation("/login");
     },
   });
