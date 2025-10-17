@@ -9,10 +9,9 @@ import { Eye, EyeOff } from "lucide-react";
 
 interface LoginFormProps {
   onSuccess: () => void;
-  onShowPublic: () => void;
 }
 
-export function LoginForm({ onSuccess, onShowPublic }: LoginFormProps) {
+export function LoginForm({ onSuccess }: LoginFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -45,8 +44,8 @@ export function LoginForm({ onSuccess, onShowPublic }: LoginFormProps) {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Sistema de Documentação</CardTitle>
-          <CardDescription>Acesse o painel administrativo</CardDescription>
+          <CardTitle className="text-2xl font-bold">Base de Conhecimento Vortex Hub</CardTitle>
+          <CardDescription>Acesso exclusivo para funcionários</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6" data-testid="login-form">
@@ -101,17 +100,6 @@ export function LoginForm({ onSuccess, onShowPublic }: LoginFormProps) {
               {isLoading ? "Entrando..." : "Entrar"}
             </Button>
           </form>
-          
-          <div className="mt-6 text-center">
-            <Button
-              variant="link"
-              onClick={onShowPublic}
-              className="text-sm"
-              data-testid="button-show-public"
-            >
-              Ver projetos públicos
-            </Button>
-          </div>
         </CardContent>
       </Card>
     </div>
